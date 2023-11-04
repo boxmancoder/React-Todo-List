@@ -1,12 +1,28 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* full height of the viewport */
+    margin: 0; /* remove default margin */
+  }
 
-/* 
+  .todo-card {
+    width: 300px; 
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
 
-    You can write your own styles here...
-    
-    
-    ...Or you can use the import command to include 
-    other sylesheets into your bunde as well, e.j:
-    
-    import 'relative/path/to/stylesheet.scss';
 
-*/
+.task:hover .trash-icon {
+  opacity: 1;
+}
+
+.trash-icon {
+  color: #000; 
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
