@@ -3,8 +3,26 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh; /* full height of the viewport */
-    margin: 0; /* remove default margin */
+    margin: 0; /* removes default margin */
   }
+
+  .header-container {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1000;
+}
+
+ul {
+  max-height: calc(100vh - 120px); /* Adjust 120px based header's actual height */
+  overflow-y: auto;
+}
+
+.input-secondary {
+  position: sticky;
+  top: 60px; /* Adjust based on header's height */
+  z-index: 999;
+}
 
   .todo-card {
     width: 300px; 
@@ -14,6 +32,10 @@ body {
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
