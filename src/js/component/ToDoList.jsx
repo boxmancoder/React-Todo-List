@@ -1,22 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboardList } from '@fortawesome/free-solid-svg-icons';
+import { fetchTasks, syncTasksWithServer } from '../api.js';
 
 function TodoApp() {
     const [tasks, setTasks] = useState([]);
     const [currentTask, setCurrentTask] = useState('');
 
+    useEffect(() => {
+        fetchTasks()
+            .then(fetchedTasks => setTasks(fetchedTasks.map(task => task.label)))
+            .catch(error => console.error('Error:', error));
+    }, []);
+
     const handleAddTask = () => {
         if (currentTask.trim() !== '') {
-            setTasks([...tasks, currentTask]);
+            const updatedTasks = [...tasks, currentTask];
+            setTasks(updatedTasks);
+            syncTasksWithServer(updatedTasks);
             setCurrentTask('');
         }
     };
 
     const handleDeleteTask = (index) => {
-        const newTasks = tasks.slice();
-        newTasks.splice(index, 1);
-        setTasks(newTasks);
+        const updatedTasks = tasks.filter((_, idx) => idx !== index);
+        setTasks(updatedTasks);
+        syncTasksWithServer(updatedTasks);
     };
 
     const handleKeyDown = (event) => {
@@ -25,6 +34,12 @@ function TodoApp() {
         }
     };
 
+    const handleClearAllTasks = () => {
+        setTasks([]);
+        syncTasksWithServer([]);
+    };
+
+
     return (
         <div className="todo-container">
             <div className="header-container">
@@ -32,13 +47,13 @@ function TodoApp() {
                     <FontAwesomeIcon icon={faClipboardList} /> The ToDoList
                 </h1>
                 <input 
-    type="text" 
-    className="input-secondary"
-    placeholder="Type an activity here!" 
-    value={currentTask}
-    onChange={e => setCurrentTask(e.target.value)}
-    onKeyDown={handleKeyDown}
-/>
+                    type="text" 
+                    className="input-secondary"
+                    placeholder="Type an activity here!" 
+                    value={currentTask}
+                    onChange={e => setCurrentTask(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
             </div>
             <ul>
                 {tasks.length === 0 ? (
@@ -46,17 +61,18 @@ function TodoApp() {
                 ) : (
                     tasks.map((task, index) => (
                         <li key={index} className="todo-card task">
-    {task} 
-     <span 
-        className="trash-icon" 
-        style={{marginLeft: '10px', cursor: 'pointer'}} 
-        onClick={() => handleDeleteTask(index)}>
-        🗑️
-    </span>
-</li>
+                            {task} 
+                            <span 
+                                className="trash-icon" 
+                                style={{marginLeft: '10px', cursor: 'pointer'}} 
+                                onClick={() => handleDeleteTask(index)}>
+                                🗑️
+                            </span>
+                        </li>
                     ))
                 )}
             </ul>
+            <button onClick={handleClearAllTasks}>Clear All Tasks</button>
 
             <style jsx>{`
 
