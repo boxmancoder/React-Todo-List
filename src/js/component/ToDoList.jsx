@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClipboardList } from '@fortawesome/free-solid-svg-icons';
-import { fetchTasks, syncTasksWithServer } from '../api.js';
+import { fetchTodos, syncTasksWithServer } from '../api';
 
 function TodoApp() {
     const [tasks, setTasks] = useState([]);
     const [currentTask, setCurrentTask] = useState('');
 
     useEffect(() => {
-        fetchTasks()
-            .then(fetchedTasks => setTasks(fetchedTasks.map(task => task.label)))
+        fetchTodos()
+            .then(fetchedTasks => {
+                if (Array.isArray(fetchedTasks)) {
+                    setTasks(fetchedTasks);
+                }
+            })
             .catch(error => console.error('Error:', error));
     }, []);
 
     const handleAddTask = () => {
         if (currentTask.trim() !== '') {
-            const updatedTasks = [...tasks, currentTask];
+            const newTask = { label: currentTask, done: false };
+            const updatedTasks = [...tasks, newTask];
             setTasks(updatedTasks);
             syncTasksWithServer(updatedTasks);
             setCurrentTask('');
@@ -39,7 +44,6 @@ function TodoApp() {
         syncTasksWithServer([]);
     };
 
-
     return (
         <div className="todo-container">
             <div className="header-container">
@@ -61,7 +65,7 @@ function TodoApp() {
                 ) : (
                     tasks.map((task, index) => (
                         <li key={index} className="todo-card task">
-                            {task} 
+                            {task.label} 
                             <span 
                                 className="trash-icon" 
                                 style={{marginLeft: '10px', cursor: 'pointer'}} 
